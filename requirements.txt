@@ -1,0 +1,38 @@
+# Core LangChain dependencies
+langchain-openai
+langchain-core
+langchain-community
+langchain-groq
+langchainhub
+
+# Web frameworks
+streamlit
+fastapi
+uvicorn
+flask
+flask-cors
+
+# Environment and utilities
+python-dotenv
+sse-starlette
+requests
+
+# Data processing and scraping
+beautifulsoup4
+bs4
+pypdf
+PyPDF2
+pandas
+duckdb
+
+# Vector databases and embeddings
+chromadb
+faiss-cpu
+sentence-transformers
+
+# Additional tools
+wikipedia
+arxiv
+cassio
+langserve
+groq

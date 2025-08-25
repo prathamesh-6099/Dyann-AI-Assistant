@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Document & CSV Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Header -->
+    <div class="main-header">
+        <div class="header-content">
+            <h1>🤖 AI Document & CSV Assistant</h1>
+            <p>Ask questions about your documents and analyze CSV data with AI-powered SQL generation</p>
+            <div class="developer">Powwered by <strong>Dyann</strong> 🚀</div>
+        </div>
+        <div class="header-animation">
+            <div class="floating-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="document">
+            <i class="fas fa-book"></i>
+            Document Analysis
+        </button>
+        <button class="tab-btn" data-tab="csv">
+            <i class="fas fa-chart-bar"></i>
+            CSV Analysis
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3>🚀 Model Configuration</h3>
+                <div class="form-group">
+                    <label for="model-select">Choose Model:</label>
+                    <select id="model-select" class="select-input">
+                        <option value="llama3-8b-8192">Llama3-8B-8192</option>
+                        <option value="llama3-70b-8192">Llama3-70B-8192</option>
+                        <option value="gemma2-9b-it">Gemma2-9B-IT</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sidebar-section" id="doc-settings">
+                <h3>📚 Document Source</h3>
+                <div class="form-group">
+                    <label for="doc-url">Document URL:</label>
+                    <input type="url" id="doc-url" class="text-input" 
+                           value="https://docs.smith.langchain.com/"
+                           placeholder="Enter document URL">
+                </div>
+                
+                <h3>⚙️ Processing Settings</h3>
+                <div class="form-group">
+                    <label for="chunk-size">Chunk Size: <span id="chunk-size-value">1000</span></label>
+                    <input type="range" id="chunk-size" class="slider" min="500" max="2000" value="1000" step="100">
+                </div>
+                <div class="form-group">
+                    <label for="chunk-overlap">Chunk Overlap: <span id="chunk-overlap-value">200</span></label>
+                    <input type="range" id="chunk-overlap" class="slider" min="100" max="500" value="200" step="50">
+                </div>
+                
+                <button id="initialize-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    Initialize System
+                </button>
+            </div>
+
+            <div class="sidebar-section system-status" id="system-status" style="display: none;">
+                <h3>📊 System Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Documents:</span>
+                        <span class="status-value" id="docs-count">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Chunks:</span>
+                        <span class="status-value" id="chunks-count">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="system-status-text">Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <button id="clear-history-btn" class="btn btn-secondary">
+                    <i class="fas fa-trash"></i>
+                    Clear History
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Document Analysis Tab -->
+            <div id="document-tab" class="tab-content active">
+                <div class="input-section">
+                    <h2>💬 Ask Your Question</h2>
+                    <div class="input-container">
+                        <input type="text" id="doc-question" class="question-input" 
+                               placeholder="e.g., What is prompt engineering?" 
+                               disabled>
+                        <button id="ask-doc-btn" class="btn btn-primary ask-btn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                            Ask AI
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-container" id="doc-chat-container">
+                    <div class="welcome-message">
+                        <i class="fas fa-robot"></i>
+                        <h3>Welcome to Document Analysis!</h3>
+                        <p>Initialize the system first, then ask questions about your documents.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSV Analysis Tab -->
+            <div id="csv-tab" class="tab-content">
+                <div class="csv-upload-section">
+                    <h2>📁 Upload Your CSV File</h2>
+                    <div class="upload-container">
+                        <input type="file" id="csv-file" accept=".csv" style="display: none;">
+                        <div class="upload-area" id="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag & drop your CSV file</p>
+                            <small>Only CSV files are supported</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="csv-info-section" id="csv-info" style="display: none;">
+                    <div class="csv-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-table"></i>
+                            <div class="stat-content">
+                                <span class="stat-value" id="csv-rows">0</span>
+                                <span class="stat-label">Rows</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-columns"></i>
+                            <div class="stat-content">
+                                <span class="stat-value" id="csv-columns">0</span>
+                                <span class="stat-label">Columns</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="stat-content">
+                                <span class="stat-value">Ready</span>
+                                <span class="stat-label">Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schema-section">
+                        <h3>🔍 Data Schema</h3>
+                        <div class="schema-grid" id="schema-grid"></div>
+                    </div>
+
+                    <div class="preview-section">
+                        <h3>📋 Data Preview</h3>
+                        <div class="table-container">
+                            <table id="preview-table"></table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-section" id="csv-input-section" style="display: none;">
+                    <h2>🤖 Ask Questions About Your Data</h2>
+                    <div class="input-container">
+                        <input type="text" id="csv-question" class="question-input" 
+                               placeholder="e.g., Show me the top 5 sales by region, What's the average age of customers?">
+                        <button id="analyze-csv-btn" class="btn btn-primary ask-btn">
+                            <i class="fas fa-chart-line"></i>
+                            Analyze Data
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-container" id="csv-chat-container">
+                    <div class="welcome-message">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Welcome to CSV Analysis!</h3>
+                        <p>Upload a CSV file to start analyzing your data with natural language queries.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loading-text">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="results-modal-overlay">
+        <div class="modal" id="results-modal">
+            <div class="modal-header">
+                <h3>📊 Query Results</h3>
+                <button class="modal-close" id="close-results-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="results-info">
+                    <span class="results-count" id="modal-results-count">0 rows</span>
+                    <button class="btn btn-secondary" id="download-results-btn">
+                        <i class="fas fa-download"></i>
+                        Download CSV
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="results-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
