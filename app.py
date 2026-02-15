@@ -174,7 +174,7 @@ def explain_results(sql_query, results_df, user_question):
         groq_api_key = os.environ['GROQ_API_KEY']
         llm = ChatGroq(
             groq_api_key=groq_api_key,
-            model_name="llama3-8b-8192"
+            model_name="llama-3.1-8b-instant"
         )
         
         results_summary = f"""
@@ -267,7 +267,7 @@ def ask_document():
         
         data = request.json
         user_input = data.get('question', '')
-        model_name = data.get('model', 'llama3-8b-8192')
+        model_name = data.get('model', 'llama-3.1-8b-instant')
         
         if not user_input:
             return jsonify({'success': False, 'error': 'Question is required'}), 400
@@ -362,7 +362,7 @@ def analyze_csv():
         
         data = request.json
         question = data.get('question', '')
-        model_name = data.get('model', 'llama3-8b-8192')
+        model_name = data.get('model', 'llama-3.1-8b-instant')
         
         if not question:
             return jsonify({'success': False, 'error': 'Question is required'}), 400

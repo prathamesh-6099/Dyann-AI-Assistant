@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI Document & CSV Assistant</title>
+    <title>QueryMind - AI Document & CSV Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,15 +11,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Animated Background Orbs -->
+    <div class="floating-orb" style="width: 400px; height: 400px; background: #667eea; top: 10%; left: 5%;"></div>
+    <div class="floating-orb" style="width: 300px; height: 300px; background: #764ba2; top: 60%; right: 10%; animation-delay: -5s;"></div>
+    <div class="floating-orb" style="width: 250px; height: 250px; background: #f093fb; bottom: 10%; left: 40%; animation-delay: -10s;"></div>
     <!-- Main Header -->
     <div class="main-header">
         <div class="header-content">
-            <h1>🤖 AI Document & CSV Assistant</h1>
+            <h1>QueryMind</h1>
             <p>Ask questions about your documents and analyze CSV data with AI-powered SQL generation</p>
-            <div class="developer">Powwered by <strong>Dyann</strong> 🚀</div>
+            <div class="developer">Powered by <strong>PRATHAM</strong> 🚀</div>
         </div>
         <div class="header-animation">
             <div class="floating-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
                 <div class="particle"></div>
                 <div class="particle"></div>
                 <div class="particle"></div>
@@ -49,9 +58,9 @@
                 <div class="form-group">
                     <label for="model-select">Choose Model:</label>
                     <select id="model-select" class="select-input">
-                        <option value="llama3-8b-8192">Llama3-8B-8192</option>
-                        <option value="llama3-70b-8192">Llama3-70B-8192</option>
-                        <option value="gemma2-9b-it">Gemma2-9B-IT</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant</option>
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile</option>
+                        <option value="llama3-groq-8b-8192-tool-use-preview">Llama 3 Groq 8B Tool Use</option>
                     </select>
                 </div>
             </div>
@@ -244,5 +253,39 @@
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <!-- Cursor Glow Effect -->
+    <div class="cursor-glow" id="cursor-glow"></div>
+    
+    <script>
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX - 10 + 'px';
+            cursorGlow.style.top = e.clientY - 10 + 'px';
+        });
+        
+        // Add animation classes on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.sidebar-section, .stat-card, .schema-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>

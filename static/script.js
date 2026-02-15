@@ -183,6 +183,47 @@ function hideLoading() {
     elements.loadingOverlay.classList.remove('show');
 }
 
+// Typing indicator functions
+function showTypingIndicator(container) {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typing-indicator';
+    typingDiv.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
+    container.appendChild(typingDiv);
+    container.scrollTop = container.scrollHeight;
+    return typingDiv;
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+// Typewriter effect for AI responses
+function typewriterEffect(element, text, speed = 10) {
+    return new Promise((resolve) => {
+        let i = 0;
+        element.textContent = '';
+        
+        function type() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
+}
+
 function showToast(message, type = 'info', duration = 5000) {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -252,6 +293,13 @@ async function askDocumentQuestion() {
         return;
     }
     
+    // Add user message immediately
+    addDocumentMessage(question, 'user');
+    elements.docQuestion.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator(elements.docChatContainer);
+    
     showLoading('AI is thinking...');
     elements.askDocBtn.disabled = true;
     
@@ -269,17 +317,17 @@ async function askDocumentQuestion() {
         
         const data = await response.json();
         
+        // Hide typing indicator
+        hideTypingIndicator();
+        
         if (data.success) {
-            // Add messages to chat
-            addDocumentMessage(question, 'user');
+            // Add AI response
             addDocumentMessage(data.answer, 'assistant', data.context, data.response_time);
-            
-            // Clear input
-            elements.docQuestion.value = '';
         } else {
             throw new Error(data.error);
         }
     } catch (error) {
+        hideTypingIndicator();
         showToast(`Error: ${error.message}`, 'error');
     } finally {
         hideLoading();
@@ -463,6 +511,13 @@ async function analyzeCsvData() {
         return;
     }
     
+    // Add user message immediately
+    addCsvMessage(question, 'user');
+    elements.csvQuestion.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator(elements.csvChatContainer);
+    
     showLoading('Analyzing data...');
     elements.analyzeCsvBtn.disabled = true;
     
@@ -480,20 +535,20 @@ async function analyzeCsvData() {
         
         const data = await response.json();
         
+        // Hide typing indicator
+        hideTypingIndicator();
+        
         if (data.success) {
-            // Add messages to chat
-            addCsvMessage(question, 'user');
+            // Add AI response
             addCsvMessage(data.explanation, 'assistant', data.sql_query, data.results, data.results_count);
             
             // Store results for modal
             currentResults = data.results;
-            
-            // Clear input
-            elements.csvQuestion.value = '';
         } else {
             throw new Error(data.error);
         }
     } catch (error) {
+        hideTypingIndicator();
         showToast(`Error: ${error.message}`, 'error');
     } finally {
         hideLoading();
