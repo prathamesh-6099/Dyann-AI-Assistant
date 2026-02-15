@@ -33,7 +33,6 @@ sentence-transformers
 # Additional tools
 wikipedia
 arxiv
-cassio
 langserve
 groq
 
