@@ -103,6 +103,39 @@ querymind/
    http://localhost:5000
    ```
 
+## ☁️ Deploying to Render
+
+You can easily deploy **QueryMind** to [Render](https://render.com/) as a Python Web Service.
+
+### Step-by-Step Deployment Guide
+
+1. **Prerequisites**:
+   - Create a free account on [Render](https://render.com/).
+   - Push your code to a GitHub, GitLab, or Bitbucket repository.
+
+2. **Create a New Web Service**:
+   - In the Render Dashboard, click **New +** and select **Web Service**.
+   - Connect your GitHub repository containing this project.
+
+3. **Configure Settings**:
+   - **Name**: `querymind` (or any name you prefer)
+   - **Region**: Choose the region closest to you (e.g., `Singapore`, `Oregon`, `Frankfurt`)
+   - **Branch**: `main` (or your production branch)
+   - **Runtime**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app` (Render automatically binds to the `$PORT` environment variable)
+
+4. **Add Environment Variables**:
+   - Click the **Advanced** button or go to the **Environment** tab.
+   - Click **Add Environment Variable** to configure the following keys:
+     - `GROQ_API_KEY`: Your Groq API key (Required)
+     - `USER_AGENT`: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36` (Required for LangChain's `WebBaseLoader` to function correctly without being blocked by websites)
+     - `PYTHON_VERSION`: `3.12.0` (Recommended)
+
+5. **Deploy**:
+   - Click **Deploy Web Service**.
+   - Render will build the environment and launch the Flask application. Once successful, you will receive a public URL (e.g., `https://querymind.onrender.com`).
+
 ## 📖 Usage Guide
 
 ### Document Analysis
