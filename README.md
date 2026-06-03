@@ -123,7 +123,7 @@ You can easily deploy **QueryMind** to [Render](https://render.com/) as a Python
    - **Branch**: `main` (or your production branch)
    - **Runtime**: `Python`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app` (Render automatically binds to the `$PORT` environment variable)
+   - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT` (This binds the server to Render's dynamic port, or you can leave it blank/default to let Render automatically use the `Procfile`)
 
 4. **Add Environment Variables**:
    - Click the **Advanced** button or go to the **Environment** tab.
