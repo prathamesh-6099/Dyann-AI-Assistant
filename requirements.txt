@@ -1,3 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+
 # Core LangChain dependencies
 langchain
 langchain-openai

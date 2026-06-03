@@ -1,15 +1,6 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
 import os
-import pandas as pd
-import duckdb
-from langchain_groq import ChatGroq
-from langchain_community.document_loaders import WebBaseLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_classic.chains import create_retrieval_chain
-from langchain_community.vectorstores import FAISS
 import time
 from datetime import datetime
 import json
@@ -17,7 +8,6 @@ import io
 import re
 import html
 from werkzeug.utils import secure_filename
-from sentence_transformers import SentenceTransformer
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -45,6 +35,7 @@ csv_system = {
 
 class SentenceTransformerWrapper:
     def __init__(self, model_name):
+        from sentence_transformers import SentenceTransformer
         self.model = SentenceTransformer(model_name)
     
     def __call__(self, texts):
@@ -84,6 +75,9 @@ def detect_csv_schema(df):
 def generate_sql_with_llm(schema_info, user_question, groq_api_key, model_name):
     """Generate SQL query using LLM based on schema and user question"""
     try:
+        from langchain_groq import ChatGroq
+        from langchain_core.prompts import ChatPromptTemplate
+        
         llm = ChatGroq(
             groq_api_key=groq_api_key,
             model_name=model_name
@@ -150,6 +144,9 @@ def generate_sql_with_llm(schema_info, user_question, groq_api_key, model_name):
 def execute_sql_on_csv(df, sql_query):
     """Execute SQL query on CSV data using DuckDB"""
     try:
+        import duckdb
+        import pandas as pd
+        
         con = duckdb.connect(database=':memory:')
         con.register('csv_data', df)
         
@@ -171,6 +168,9 @@ def execute_sql_on_csv(df, sql_query):
 def explain_results(sql_query, results_df, user_question):
     """Generate explanation of results using LLM"""
     try:
+        from langchain_groq import ChatGroq
+        from langchain_core.prompts import ChatPromptTemplate
+        
         groq_api_key = os.environ['GROQ_API_KEY']
         llm = ChatGroq(
             groq_api_key=groq_api_key,
@@ -217,6 +217,10 @@ def index():
 @app.route('/api/initialize-docs', methods=['POST'])
 def initialize_docs():
     try:
+        from langchain_community.document_loaders import WebBaseLoader
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        from langchain_community.vectorstores import FAISS
+        
         data = request.json
         doc_url = data.get('doc_url', 'https://docs.smith.langchain.com/')
         chunk_size = int(data.get('chunk_size', 1000))
@@ -262,6 +266,11 @@ def initialize_docs():
 @app.route('/api/ask-document', methods=['POST'])
 def ask_document():
     try:
+        from langchain_groq import ChatGroq
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+        from langchain_classic.chains import create_retrieval_chain
+        
         if not doc_system['initialized']:
             return jsonify({'success': False, 'error': 'Document system not initialized'}), 400
         
@@ -326,6 +335,8 @@ def ask_document():
 @app.route('/api/upload-csv', methods=['POST'])
 def upload_csv():
     try:
+        import pandas as pd
+        
         if 'file' not in request.files:
             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
         
@@ -419,6 +430,8 @@ def analyze_csv():
 @app.route('/api/download-results', methods=['POST'])
 def download_results():
     try:
+        import pandas as pd
+        
         data = request.json
         results = data.get('results', [])
         
