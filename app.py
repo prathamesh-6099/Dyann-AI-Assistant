@@ -210,6 +210,10 @@ def explain_results(sql_query, results_df, user_question):
     except Exception as e:
         return f"Unable to generate explanation: {str(e)}"
 
+@app.route('/api/health')
+def health_check():
+    return jsonify({'status': 'ok'})
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -484,4 +488,9 @@ def clear_history():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(
+        debug=True, 
+        host='0.0.0.0', 
+        port=port, 
+        exclude_patterns=["*myenv*"]
+    )

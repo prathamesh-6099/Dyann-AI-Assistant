@@ -2,6 +2,22 @@
 let currentTab = 'document';
 let currentResults = null;
 
+// Safe JSON parser — prevents "Unexpected token '<'" when server returns HTML
+async function safeParseJSON(response) {
+    const text = await response.text();
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        // Server returned non-JSON (likely an HTML error page)
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error(
+            response.ok
+                ? 'Server returned an unexpected response. Please try again.'
+                : `Server error (${response.status}). The server may be starting up — please wait a moment and retry.`
+        );
+    }
+}
+
 // DOM elements
 const elements = {
     // Tabs
@@ -145,7 +161,7 @@ async function initializeDocumentSystem() {
             })
         });
         
-        const data = await response.json();
+        const data = await safeParseJSON(response);
         
         if (data.success) {
             // Update system status
@@ -315,7 +331,7 @@ async function askDocumentQuestion() {
             })
         });
         
-        const data = await response.json();
+        const data = await safeParseJSON(response);
         
         // Hide typing indicator
         hideTypingIndicator();
@@ -446,7 +462,7 @@ async function handleFile(file) {
             body: formData
         });
         
-        const data = await response.json();
+        const data = await safeParseJSON(response);
         
         if (data.success) {
             displayCsvInfo(data.schema, data.preview);
@@ -533,7 +549,7 @@ async function analyzeCsvData() {
             })
         });
         
-        const data = await response.json();
+        const data = await safeParseJSON(response);
         
         // Hide typing indicator
         hideTypingIndicator();
@@ -788,7 +804,7 @@ async function clearHistory() {
             })
         });
 
-        const data = await response.json();
+        const data = await safeParseJSON(response);
 
         if (data.success) {
             if (currentTab === 'document') {
